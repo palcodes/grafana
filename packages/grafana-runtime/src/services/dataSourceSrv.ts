@@ -1,3 +1,5 @@
+import { Subject } from 'rxjs';
+
 import { ScopedVars, DataSourceApi, DataSourceInstanceSettings, DataSourceRef } from '@grafana/data';
 
 /**
@@ -33,6 +35,8 @@ export interface DataSourceSrv {
    * Reloads the DataSourceSrv
    */
   reload(): void;
+
+  $datasources: Subject<DataSourceInstanceSettings[]>;
 }
 
 /** @public */

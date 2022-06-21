@@ -1,3 +1,5 @@
+import { BehaviorSubject } from 'rxjs';
+
 import {
   AppEvents,
   DataSourceApi,
@@ -34,6 +36,7 @@ export class DatasourceSrv implements DataSourceService {
   private settingsMapByUid: Record<string, DataSourceInstanceSettings> = {};
   private settingsMapById: Record<string, DataSourceInstanceSettings> = {};
   private defaultName = ''; // actually UID
+  $datasources: BehaviorSubject<DataSourceInstanceSettings[]> = new BehaviorSubject(this.getAll());
 
   constructor(private templateSrv: TemplateSrv = getTemplateSrv()) {}
 
@@ -57,6 +60,7 @@ export class DatasourceSrv implements DataSourceService {
     this.datasources[ExpressionDatasourceUID] = expressionDatasource as any;
     this.settingsMapByUid[ExpressionDatasourceRef.uid] = expressionInstanceSettings;
     this.settingsMapByUid[ExpressionDatasourceUID] = expressionInstanceSettings;
+    this.$datasources.next(this.getAll());
   }
 
   getDataSourceSettingsByUid(uid: string): DataSourceInstanceSettings | undefined {
