@@ -38,6 +38,7 @@ var (
 	ErrDataSourceFailedGenerateUniqueUid = errors.New("failed to generate unique datasource ID")
 	ErrDataSourceIdentifierNotSet        = errors.New("unique identifier and org id are needed to be able to get or delete a datasource")
 	ErrCorrelationExists                 = errors.New("correlation to the same datasource already exists")
+	ErrCorrelationNotFound               = errors.New("correlation not found")
 )
 
 type DsAccess string
@@ -137,6 +138,7 @@ type UpdateDataSourceCommand struct {
 	BasicAuthUser   string            `json:"basicAuthUser"`
 	WithCredentials bool              `json:"withCredentials"`
 	IsDefault       bool              `json:"isDefault"`
+	Correlations    []Correlation     `json:"correlations"`
 	JsonData        *simplejson.Json  `json:"jsonData"`
 	SecureJsonData  map[string]string `json:"secureJsonData"`
 	Version         int               `json:"version"`
@@ -188,6 +190,13 @@ type UpdateCorrelationsCommand struct {
 	Correlations []Correlation
 
 	Result []Correlation
+}
+
+// DeleteCorrelationCommand deletes a correlation
+type DeleteCorrelationCommand struct {
+	OrgID     int64
+	SourceUID string
+	TargetUID string
 }
 
 // Function for updating secrets along with datasources, to ensure atomicity
