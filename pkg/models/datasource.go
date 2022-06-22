@@ -37,9 +37,15 @@ var (
 	ErrDataSourceAccessDenied            = errors.New("data source access denied")
 	ErrDataSourceFailedGenerateUniqueUid = errors.New("failed to generate unique datasource ID")
 	ErrDataSourceIdentifierNotSet        = errors.New("unique identifier and org id are needed to be able to get or delete a datasource")
+	ErrCorrelationExists                 = errors.New("correlation to the same datasource already exists")
 )
 
 type DsAccess string
+
+type Correlation struct {
+	Target  string           `json:"target"`
+	Options *simplejson.Json `json:"options,omitempty"`
+}
 
 type DataSource struct {
 	Id      int64 `json:"id"`
@@ -60,6 +66,7 @@ type DataSource struct {
 	BasicAuthPassword string            `json:"-"`
 	WithCredentials   bool              `json:"withCredentials"`
 	IsDefault         bool              `json:"isDefault"`
+	Correlations      []Correlation     `json:"correlations"`
 	JsonData          *simplejson.Json  `json:"jsonData"`
 	SecureJsonData    map[string][]byte `json:"secureJsonData"`
 	ReadOnly          bool              `json:"readOnly"`
@@ -156,6 +163,31 @@ type DeleteDataSourceCommand struct {
 	DeletedDatasourcesCount int64
 
 	UpdateSecretFn UpdateSecretFn
+}
+
+// Correlations are uniquely identified by a SourceUid+TargetUid pair.
+
+// AddCorrelationCommand adds a correlation
+type AddCorrelationCommand struct {
+	OrgID     int64
+	SourceUID string
+	TargetUID string `json:"targetUid" binding:"Required"`
+	// TODO: Options
+
+	Result Correlation
+}
+
+// UpdateCorrelationsCommand updates a correlation
+type UpdateCorrelationsCommand struct {
+	OrgId     int64  `json:"-"`
+	Id        int64  `json:"-"`
+	SourceUID string `json:"sourceUid" binding:"Required"`
+	TargetUID string `json:"targetUid" binding:"Required"`
+	// TODO: Options
+
+	Correlations []Correlation
+
+	Result []Correlation
 }
 
 // Function for updating secrets along with datasources, to ensure atomicity

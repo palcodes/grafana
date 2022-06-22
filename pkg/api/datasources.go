@@ -428,6 +428,42 @@ func (hs *HTTPServer) GetDataSourceIdByName(c *models.ReqContext) response.Respo
 	return response.JSON(http.StatusOK, &dtos)
 }
 
+// Post /api/datasources/:uid/correlations
+func (hs *HTTPServer) AddCorrelation(c *models.ReqContext) response.Response {
+	cmd := models.AddCorrelationCommand{
+		OrgID: c.OrgId,
+	}
+	if err := web.Bind(c.Req, &cmd); err != nil {
+		return response.Error(http.StatusBadRequest, "bad request data", err)
+	}
+	cmd.SourceUID = web.Params(c.Req)[":uid"]
+
+	err := hs.DataSourcesService.AddCorrelation(c.Req.Context(), &cmd)
+
+	if err != nil {
+		// TODO: we may want to differentiate the following error between source and target DS
+		if errors.Is(err, models.ErrDataSourceNotFound) {
+			return response.Error(http.StatusNotFound, "Data source not found", nil)
+		}
+		if errors.Is(err, models.ErrDatasourceIsReadOnly) {
+			return response.Error(http.StatusForbidden, "Data source is read only", nil)
+		}
+		if errors.Is(err, models.ErrCorrelationExists) {
+			return response.Error(http.StatusForbidden, fmt.Sprintf("Correlation to %s already exists", cmd.TargetUID), nil)
+		}
+
+		return response.Error(http.StatusInternalServerError, "Failed to query datasources", err)
+	}
+
+	// TODO: maybe this?
+	// hs.Live.HandleDatasourceUpdate(c.OrgId, cmd.SourceUID)
+
+	return response.JSON(http.StatusOK, util.DynMap{
+		"message":     "Correlation added",
+		"correlation": cmd.Result,
+	})
+}
+
 // /api/datasources/:id/resources/*
 func (hs *HTTPServer) CallDatasourceResource(c *models.ReqContext) {
 	datasourceID, err := strconv.ParseInt(web.Params(c.Req)[":id"], 10, 64)
