@@ -1247,10 +1247,10 @@ exports[`no type assertions`] = {
       [147, 21, 40, "Do not use any type assertions.", "3412752140"],
       [156, 20, 24, "Do not use any type assertions.", "302652929"]
     ],
-    "packages/jaeger-ui-components/src/model/transform-trace-data.tsx:1737944631": [
-      [91, 28, 26, "Do not use any type assertions.", "3130187028"],
-      [132, 17, 32, "Do not use any type assertions.", "4255987122"],
-      [149, 22, 36, "Do not use any type assertions.", "2906569453"]
+    "packages/jaeger-ui-components/src/model/transform-trace-data.tsx:2595306185": [
+      [100, 28, 26, "Do not use any type assertions.", "3130187028"],
+      [141, 17, 32, "Do not use any type assertions.", "4255987122"],
+      [158, 22, 36, "Do not use any type assertions.", "2906569453"]
     ],
     "plugins-bundled/internal/input-datasource/src/InputDatasource.test.ts:752523523": [
       [20, 10, 16, "Do not use any type assertions.", "1747412709"],
