@@ -76,6 +76,9 @@ import (
 	"github.com/grafana/grafana/pkg/services/pluginsettings"
 	pluginSettings "github.com/grafana/grafana/pkg/services/pluginsettings/service"
 	"github.com/grafana/grafana/pkg/services/preference/prefimpl"
+	"github.com/grafana/grafana/pkg/services/publicdashboard"
+	//publicdashboardstore "github.com/grafana/grafana/pkg/services/publicdashboard/database"
+	//publicdashboardservice "github.com/grafana/grafana/pkg/services/publicdashboard/service"
 	"github.com/grafana/grafana/pkg/services/query"
 	"github.com/grafana/grafana/pkg/services/queryhistory"
 	"github.com/grafana/grafana/pkg/services/quota"
@@ -270,6 +273,14 @@ var wireBasicSet = wire.NewSet(
 	wire.Bind(new(accesscontrol.DashboardPermissionsService), new(*ossaccesscontrol.DashboardPermissionsService)),
 	starimpl.ProvideService,
 	dashverimpl.ProvideService,
+
+	// figure out exactly what we're doing.
+	// we have the provide methods
+	publicdashboardservice.ProvidePublicDashboardService,
+	publicdashboardstore.ProvidePublicDashboardStore,
+	// then we're binding the interface to the concrete implementation
+	wire.Bind(new(publicdashboard.Service), new(*publicdashboardservice.PublicDashboardServiceImpl)),
+	wire.Bind(new(publicdashboard.store), new(*publicdashboardservice.PublicDashboardStoreImpl)),
 )
 
 var wireSet = wire.NewSet(
